@@ -49,7 +49,7 @@ function enable_timeshift {
 }
 
 function build_quiet-boot_package {
-	mkdir -p quiet-boot/etc/sysctl.d
+	mkdir -pv quiet-boot/etc/sysctl.d
     printf "# Stop low-level messages on console
 kernel.printk = 3 4 1 7" >> quiet-boot/etc/sysctl.d/20-kernel-printk.conf 
 
@@ -113,7 +113,7 @@ function install_nix_packages {
 	podman system migrate
 
 	# Distrobox setup
-	mkdir ~/.config/containers
+	mkdir -pv ~/.config/containers
 	printf '{
     "default": [
         {
@@ -123,7 +123,7 @@ function install_nix_packages {
 }
 ' >> ~/.config/containers/policy.json
 
-	mkdir -p ~/.config/systemd/user
+	mkdir -pv ~/.config/systemd/user
 	ln -s ~/.nix-profile/lib/systemd/user/podman.service ~/.config/systemd/user/podman.service
 	ln -s ~/.nix-profile/lib/systemd/user/podman.socket ~/.config/systemd/user/podman.socket
 	ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.service ~/.config/systemd/user/podman-auto-update.service
@@ -241,7 +241,7 @@ function game_drive_setup {
 
 function install_appimages {
 	# Download and install pCloud
-	mkdir -p ~/.local/appimages
+	mkdir -pv ~/.local/appimages
 	firefox -url 'https://www.pcloud.com/download-free-online-cloud-file-storage.html'
 
 	flatpak run it.mijorus.gearlever
@@ -264,7 +264,7 @@ function install_matlab {
 	sudo apt-get install -y matlab-support
 	cp /usr/share/applications/matlab.desktop ~/.local/share/applications
 	printf "StartupWMClass=sun-awt-X11-XFramePeer\nStartupWMClass=MATLABWindow\nStartupWMClass=MATLAB R2023b - academic use" >> ~/.local/share/applications/matlab.desktop
-	mkdir -p ~/.local/MATLAB/R2023b/bin/glnxa64/
+	mkdir -pv ~/.local/MATLAB/R2023b/bin/glnxa64/
 	echo '-Djogl.disable.openglarbcontext=1' >> ~/.local/MATLAB/R2023b/bin/glnxa64/java.opts
 }
 
@@ -275,7 +275,6 @@ function customisations {
 	gsettings set org.gnome.desktop.interface clock-show-weekday true
 	gsettings set org.gnome.desktop.interface clock-format '24h'
 	gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
-	gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 36
 	gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 	gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
 	gsettings set org.gnome.shell.extensions.ding show-volumes true
@@ -300,7 +299,7 @@ function customisations {
 	flatpak override --user --filesystem=xdg-data/themes
 
 	# Set GTK4 theme
-	mkdir -p ~/.config/gtk-4.0
+	mkdir -pv ~/.config/gtk-4.0
 	flatpak override --user --filesystem=xdg-config/gtk-4.0
 	flatpak run com.github.GradienceTeam.Gradience
 }
