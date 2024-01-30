@@ -307,6 +307,18 @@ function customisations {
 function install_launcher_plugins {
 	curl -sSf https://raw.githubusercontent.com/canadaduane/pop-dictionary/main/install.sh | sh
 	curl --proto '=https' -sSf https://raw.githubusercontent.com/rcastill/pop-launcher-firefox-tabs/master/scripts/install.sh | bash
+	
+ 	git clone https://github.com/FarisRedza/pop-launcher-plugin-spell.git
+  	cd pop-launcher-plugin-spell
+   	make install
+    	cd ..
+     	rm -rfv pop-launcher-plugin-spell
+
+	git clone https://github.com/FarisRedza/pop-launcher-plugin-uni.git
+  	cd pop-launcher-plugin-uni
+   	make install
+    	cd ..
+     	rm -rfv pop-launcher-plugin-uni
 }
 
 function customise_firefox {
