@@ -16,6 +16,18 @@ function check_new_install {
 	esac
 }
 
+download_latest_release_deb() {
+    local username=$1
+    local repository=$2
+
+    # Get the latest release information from GitHub API using jq
+    local latest_release=$(curl -s "https://api.github.com/repos/$username/$repository/releases/latest" | jq -r '.assets[0].browser_download_url')
+
+    # Use wget to download the deb file
+    wget $latest_release
+}
+
+
 function remove_packages {
 	sudo apt-get autopurge -y libreoffice-common
 }
