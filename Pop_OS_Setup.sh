@@ -342,6 +342,13 @@ function customise_firefox {
 	cd -
 }
 
+function setup_style_switcher {
+	printf "!/bin/bash
+style=$1
+ln -sfr ~/.config/gtk-4.0/gtk-${style}.css ~/.config/gtk-4.0/gtk.css
+" >> ~/.local/bin/style-switcher.sh
+}
+
 if [ ! -f ~/step1_complete ]
 then
 	check_new_install
@@ -383,6 +390,7 @@ then
 	install_matlab
 	install_launcher_plugins
 	customisations
+ 	setup_style_switcher
 
 	# Enable Eduroam
 	firefox -url 'https://cloud.securew2.com/public/12133/eduroam/'
