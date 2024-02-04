@@ -347,6 +347,7 @@ function setup_style_switcher {
 style=$1
 ln -sfr ~/.config/gtk-4.0/gtk-${style}.css ~/.config/gtk-4.0/gtk.css
 " >> ~/.local/bin/style-switcher.sh
+	chmod +x ~/.local/bin/style-switcher.sh
 }
 
 if [ ! -f ~/step1_complete ]
