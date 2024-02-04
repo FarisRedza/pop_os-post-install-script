@@ -16,7 +16,7 @@ function check_new_install {
 	esac
 }
 
-download_latest_release_deb() {
+github_latest_release() {
     local username=$1
     local repository=$2
 
