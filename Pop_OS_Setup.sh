@@ -60,26 +60,10 @@ function enable_timeshift {
 	sudo timeshift-gtk
 }
 
-function build_quiet-boot_package {
-	mkdir -pv quiet-boot/etc/sysctl.d
-    printf "# Stop low-level messages on console
-kernel.printk = 3 4 1 7" >> quiet-boot/etc/sysctl.d/20-kernel-printk.conf 
-
-    mkdir quiet-boot/DEBIAN
-
-    printf "Package: quiet-boot
-Version: 1.0-1
-Architecture: all
-Maintainer: $USER
-Description: Changes kernel.printk parameters to suppress kernel messages on boot\n">> quiet-boot/DEBIAN/control
-
-    dpkg-deb --root-owner-group --build quiet-boot
-    mv quiet-boot.deb quiet-boot_1.0-1_all.deb
-
-    sudo apt-get install -y ./quiet-boot_1.0-1_all.deb
-
-	rm -rfv quiet-boot
-	rm -rfv quiet-boot.0-1_all.deb
+function install_quiet-shutdown_package {
+	github_latest_release FarisRedza quiet-shutdown
+	sudo apt-get install ./quiet-shutdown*.deb
+	rm -rfv quiet-shutdown*.deb
 }
 
 function setup_nix {
@@ -359,7 +343,7 @@ then
 
 	remove_packages
 	install_packages
-	build_quiet-boot_package
+	install_quiet-shutdown_package
 	enable_timeshift
 	mk_dot_dirs
 	setup_nix
