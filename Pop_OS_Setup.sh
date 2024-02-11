@@ -54,6 +54,11 @@ function install_packages {
 	sudo apt-get install -y --no-install-recommends steam-devices
 }
 
+function add_ppa_and_install_packages {
+	sudo add-apt-repository ppa:farisredza/ppa
+ 	sudo apt-get update
+  	sudo apt-get install -y quiet-shutdown pop-launcher-plugin-spell pop-launcher-plugin-uni
+
 function enable_timeshift {
 	sudo apt-get install -y timeshift 
 	gnome-disks
@@ -303,18 +308,6 @@ function customisations {
 function install_launcher_plugins {
 	curl -sSf https://raw.githubusercontent.com/canadaduane/pop-dictionary/main/install.sh | sh
 	curl --proto '=https' -sSf https://raw.githubusercontent.com/rcastill/pop-launcher-firefox-tabs/master/scripts/install.sh | bash
-	
- 	git clone https://github.com/FarisRedza/pop-launcher-plugin-spell.git
-  	cd pop-launcher-plugin-spell
-   	make install
-    	cd ..
-     	rm -rfv pop-launcher-plugin-spell
-
-	git clone https://github.com/FarisRedza/pop-launcher-plugin-uni.git
-  	cd pop-launcher-plugin-uni
-   	make install
-    	cd ..
-     	rm -rfv pop-launcher-plugin-uni
 }
 
 function customise_firefox {
@@ -343,7 +336,7 @@ then
 
 	remove_packages
 	install_packages
-	install_quiet-shutdown_package
+	add_ppa_and_install_packages
 	enable_timeshift
 	mk_dot_dirs
 	setup_nix
