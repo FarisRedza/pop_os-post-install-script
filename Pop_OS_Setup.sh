@@ -71,6 +71,11 @@ function install_quiet-shutdown_package {
 	rm -rfv quiet-shutdown*.deb
 }
 
+function install_joycond_package {
+	github_latest_release FarisRedza joycond
+	sudo apt-get install ./joycond*.deb
+	rm -rfv joycond*.deb
+
 function setup_nix {
 	sudo rm -rfv ~/.config/nixpkgs ~/.nix-defexpr ~/.nix-profile
 
@@ -337,6 +342,7 @@ then
 	remove_packages
 	install_packages
 	add_ppa_and_install_packages
+ 	install_joycond_package
 	enable_timeshift
 	mk_dot_dirs
 	setup_nix
