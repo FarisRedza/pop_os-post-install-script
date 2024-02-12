@@ -156,7 +156,7 @@ function install_flatpaks {
 
 	DEVELOPMENT="com.github.marhkb.Pods org.gnome.design.IconLibrary org.gnome.Devhelp io.github.MakovWait.Godots"
 
-	OFFICE="org.libreoffice.LibreOffice com.github.jeromerobert.pdfarranger com.github.flxzt.rnote fr.romainvigier.MetadataCleaner md.obsidian.Obsidian org.cvfosammmm.Setzer org.zotero.Zotero com.github.tenderowl.frog io.github.diegoivan.pdf_metadata_editor"
+	OFFICE="org.libreoffice.LibreOffice com.github.jeromerobert.pdfarranger com.github.flxzt.rnote fr.romainvigier.MetadataCleaner md.obsidian.Obsidian org.cvfosammmm.Setzer com.github.tenderowl.frog io.github.diegoivan.pdf_metadata_editor"
 
 	MISC="com.gitlab.newsflash com.spotify.Client com.todoist.Todoist de.haeckerfelix.Fragments org.freecadweb.FreeCAD org.nickvision.tubeconverter org.remmina.Remmina org.videolan.VLC com.prusa3d.PrusaSlicer"
 
@@ -170,10 +170,16 @@ function install_flatpaks {
 
 	POP="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark com.github.GradienceTeam.Gradience org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks"
 
-	flatpak install -y $UTILITIES $DEVELOPMENT $OFFICE $MISC $GRAPHICS $SOCIAL $GAMES $GAMEUTILITIES $POP
+	flatpak install flathub -y $UTILITIES $DEVELOPMENT $OFFICE $MISC $GRAPHICS $SOCIAL $GAMES $GAMEUTILITIES $POP
 
 	vlc_pause_click_plugin
 	game_drive_setup	
+}
+
+function install_beta_flatpaks {
+	flatpak remote-add --user --if-not-exists --title="Flathub Beta" flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+	flatpak update -y
+	flatpak install flathub-beta -y org.zotero.Zotero
 }
 
 function vlc_pause_click_plugin {
@@ -371,6 +377,7 @@ fi
 if [ -f ~/step1_complete ] && [ -f ~/step2_complete ]
 then
 	install_flatpaks
+	install_beta_flatpaks
 	install_appimages
 	install_matlab
 	install_launcher_plugins
