@@ -33,9 +33,9 @@ function remove_packages {
 }
 
 function install_packages {
-	SYSTEM_APPS="synaptic gparted virt-manager"
+	SYSTEM_APPS="gparted virt-manager"
 
-	SYSTEM_UTILITIES="apt-file dpkg-repack openssh-server gpart uidmap python3-venv python3-pylatexenc"
+	SYSTEM_UTILITIES="apt-file dpkg-repack openssh-server gpart uidmap python3-venv"
 
 	HARDWARE_UTILITIES="btrfs-progs exfatprogs"
 
@@ -45,7 +45,13 @@ function install_packages {
 
 	EXTRAS="gnome-user-share gnome-sushi"
 
-	sudo apt-get install -y $SYSTEM_APPS $SYSTEM_UTILITIES $HARDWARE_UTILITIES $MEDIA_UTILITIES $DEVELOPMENT $EXTRAS
+	POP="synaptic"
+
+	DEBIAN=""
+
+	DISTRO=$POP
+
+	sudo apt-get install -y $SYSTEM_APPS $SYSTEM_UTILITIES $HARDWARE_UTILITIES $MEDIA_UTILITIES $DEVELOPMENT $EXTRAS $DISTRO
 
 	# Enable DVD playback
 	sudo apt-get -y install libdvd-pkg
@@ -59,6 +65,7 @@ function add_ppa_and_install_packages {
  	repoman # temporary workaround until I know how to setup repo to look the same as adding with repoman
  	sudo apt-get update
   	sudo apt-get install -y quiet-shutdown pop-launcher-plugin-spell pop-launcher-plugin-uni
+}
 
 function enable_timeshift {
 	sudo apt-get install -y timeshift 
@@ -76,6 +83,7 @@ function install_joycond_package {
 	github_latest_release FarisRedza joycond
 	sudo apt-get install ./joycond*.deb
 	rm -rfv joycond*.deb
+}
 
 function setup_nix {
 	sudo rm -rfv ~/.config/nixpkgs ~/.nix-defexpr ~/.nix-profile
@@ -112,9 +120,20 @@ function install_nix_packages {
 
 	GAMEUTILITIES="nixpkgs.ckan"
 
-	UTILITIES="nixpkgs.neofetch nixpkgs.tldr nixpkgs.htop nixpkgs.lm_sensors nixpkgs.tmux nixpkgs.hunspell nixpkgs.xclip"
+	UTILITIES="nixpkgs.neofetch nixpkgs.tldr nixpkgs.htop nixpkgs.lm_sensors nixpkgs.tmux"
 
-	nix-env -iA $ANDROID $DEVELOPMENT $GAMEUTILITIES $UTILITIES
+	POP=""
+
+	DEBIAN="nixpkgs.git nixpkgs.adw-gtk3"
+
+	DISTRO=$POP
+
+	nix-env -iA $ANDROID $DEVELOPMENT $GAMEUTILITIES $UTILITIES $DISTRO
+
+	if [ "$DISTRO" == "$DEBIAN" ]; then
+		# Symlink theme
+		sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
+	fi
 
 	# Fix podman permissions
 	podman system migrate
@@ -170,7 +189,11 @@ function install_flatpaks {
 
 	POP="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark com.github.GradienceTeam.Gradience org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks"
 
-	flatpak install flathub -y $UTILITIES $DEVELOPMENT $OFFICE $MISC $GRAPHICS $SOCIAL $GAMES $GAMEUTILITIES $POP
+	DEBIAN="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike"
+
+	DISTRO=$POP
+
+	flatpak install flathub -y $UTILITIES $DEVELOPMENT $OFFICE $MISC $GRAPHICS $SOCIAL $GAMES $GAMEUTILITIES $DISTRO
 
 	vlc_pause_click_plugin
 	game_drive_setup	
@@ -338,6 +361,84 @@ ln -sfr ~/.config/gtk-4.0/gtk-${style}.css ~/.config/gtk-4.0/gtk.css
 " >> ~/.local/bin/style-switcher.sh
 	chmod +x ~/.local/bin/style-switcher.sh
 }
+
+# Debian functions
+function add_repos {
+	# Add contrib repo
+	SOURCES="/etc/apt/sources.list"
+	sudo sed -i 's/deb http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware/deb http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware contrib non-free/g' $SOURCES
+	sudo sed -i 's/deb-src http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware/deb-src http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware contrib non-free/g' $SOURCES
+
+	# Add non-free repo
+	sudo sed -i 's/deb http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware/deb http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware contrib non-free/g' $SOURCES
+	sudo sed -i 's/deb-src http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware/deb-src http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware contrib non-free/g' $SOURCES
+
+	# Add backports repo
+	echo 'deb http://deb.debian.org/debian bookworm-backports main
+	# deb-src http://deb.debian.org/debian bookworm-backports main' | sudo tee -a /etc/apt/sources.list.d/bookworm-backports.list > /dev/null
+
+	# Add vscode repo
+	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+	sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+	sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+	rm -f packages.microsoft.gpg
+	
+	sudo apt-get update
+}
+
+function nvidia_drivers {
+	# Add nvidia repo
+	wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
+	sudo apt-get install -y ./cuda-keyring_1.1-1_all.deb
+	rm -rfv cuda-keyring_1.1-1_all.deb
+
+	sudo apt-get update
+}
+
+function upgrade_kernel {
+	sudo apt install -y -t stable-backports linux-image-amd64
+	sudo apt-get full-upgrade -y
+}
+
+function tune_performance {
+	# Enable ZRAM
+	sudo apt-get install -y zram-tools
+	echo -e "ALGO=zstd\nPERCENT=60" | sudo tee -a /etc/default/zramswap
+	sudo service zramswap reload
+
+	# Increase swappiness to force use of ZRAM
+	echo 'vm.swappiness=180' | sudo tee -a /etc/sysctl.d/99-swappiness.conf
+
+	# Increase vm.max_map_count
+	echo 'vm.max_map_count = 2147483642' | sudo tee -a /etc/sysctl.d/80-gamecompatibility.conf
+}
+
+function setup_flatpak {
+	sudo apt-get install -y gnome-software-plugin-flatpak
+	flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+}
+
+function setup_snap {
+	sudo apt-get install -y gnome-software-plugin-snap
+	sudo snap install core
+}
+
+function edit_grub {
+	sudo cp /etc/default/grub /etc/default/grub.bak
+	sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+	sudo sed -i '/GRUB_TIMEOUT=0/a GRUB_TIMEOUT_STYLE=hidden' /etc/default/grub
+	sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/a GRUB_HIDDEN_TIMEOUT=0' /etc/default/grub
+	sudo sed -i '/GRUB_HIDDEN_TIMEOUT=0/a GRUB_HIDDEN_TIMEOUT_QUIET=true' /etc/default/grub
+	sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
+	sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/g' /etc/default/grub
+
+	sudo update-grub
+}
+
+function install_snaps {
+	sudo snap install code --classic
+}
+
 
 if [ ! -f ~/step1_complete ]
 then
