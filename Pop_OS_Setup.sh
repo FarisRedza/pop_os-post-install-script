@@ -167,6 +167,7 @@ function install_p3xonenote {
 	github_latest_release_deb patrikx3 onenote
  	sudo apt-get install -y ./p3x-onenote*.deb
   	rm -rfv ./p3x-onenote*.deb
+}
 
 function autostart_script {
 	printf "[Desktop Entry]
