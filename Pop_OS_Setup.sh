@@ -2,6 +2,7 @@
 
 USER=$(whoami)
 SCRIPT="Pop_OS_Setup"
+DISTRO="POP"
 
 function check_new_install {
 	read -p "New install? [y/n] " response
@@ -54,31 +55,48 @@ github_latest_release_deb() {
     fi
 }
 
-
 function remove_packages {
-	sudo apt-get autopurge -y libreoffice-common
+	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common"
+
+	local pop="libreoffice-common"
+	
+	if [ $DISTRO = "POP" ]
+	then
+			local distro=$pop
+	elif [ $DISTRO = "DEBIAN" ]
+	then
+			local distro=$debian
+	fi
+
+	sudo apt-get autopurge -y $distro
 }
 
 function install_packages {
-	SYSTEM_APPS="gparted virt-manager"
+	local system_apps="gparted virt-manager"
 
-	SYSTEM_UTILITIES="apt-file dpkg-repack openssh-server gpart uidmap python3-venv"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap python3-venv"
 
-	HARDWARE_UTILITIES="btrfs-progs exfatprogs"
+	local hardware_utilities="btrfs-progs exfatprogs"
 
-	MEDIA_UTILITIES="ubuntu-restricted-extras webp-pixbuf-loader playerctl"
+	local media_utilities="ubuntu-restricted-extras webp-pixbuf-loader playerctl"
 
-	DEVELOPMENT="code"
+	local development="code"
 
-	EXTRAS="gnome-user-share gnome-sushi"
+	local extras="gnome-user-share gnome-sushi"
 
-	POP="synaptic"
+	local pop="synaptic"
 
-	DEBIAN=""
+	local debian=""
 
-	DISTRO=$POP
+	if [ $DISTRO = "POP" ]
+	then
+			local distro=$pop
+	elif [ $DISTRO = "DEBIAN" ]
+	then
+			local distro=$debian
+	fi
 
-	sudo apt-get install -y $SYSTEM_APPS $SYSTEM_UTILITIES $HARDWARE_UTILITIES $MEDIA_UTILITIES $DEVELOPMENT $EXTRAS $DISTRO
+	sudo apt-get install -y $system_apps $system_utilities $hardware_utilities $media_utilities $development $extras $distro
 
 	# Enable DVD playback
 	sudo apt-get -y install libdvd-pkg
@@ -140,23 +158,29 @@ Terminal=true" >> ~/.config/autostart/$SCRIPT.desktop
 }
 
 function install_nix_packages {
-	ANDROID="nixpkgs.android-tools nixpkgs.scrcpy"
+	local android="nixpkgs.android-tools nixpkgs.scrcpy"
 
-	DEVELOPMENT="nixpkgs.distrobox nixpkgs.podman"
+	local development="nixpkgs.distrobox nixpkgs.podman"
 
-	GAMEUTILITIES="nixpkgs.ckan"
+	local game_utilities="nixpkgs.ckan"
 
-	UTILITIES="nixpkgs.neofetch nixpkgs.tldr nixpkgs.htop nixpkgs.lm_sensors nixpkgs.tmux"
+	local utilities="nixpkgs.neofetch nixpkgs.tldr nixpkgs.htop nixpkgs.lm_sensors nixpkgs.tmux"
 
-	POP=""
+	local pop=""
 
-	DEBIAN="nixpkgs.git nixpkgs.adw-gtk3"
+	local debian="nixpkgs.git nixpkgs.adw-gtk3"
 
-	DISTRO=$POP
+	if [ $DISTRO = "POP" ]
+	then
+			local distro=$pop
+	elif [ $DISTRO = "DEBIAN" ]
+	then
+			local distro=$debian
+	fi
 
-	nix-env -iA $ANDROID $DEVELOPMENT $GAMEUTILITIES $UTILITIES $DISTRO
+	nix-env -iA $android $development $game_utilities $utilities $distro
 
-	if [ "$DISTRO" == "$DEBIAN" ]; then
+	if [ $DISTRO = "DEBIAN" ]; then
 		# Symlink theme
 		sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
 	fi
@@ -197,29 +221,35 @@ function install_nix_packages {
 function install_flatpaks {
 	flatpak update -y
 
-	UTILITIES="com.github.tchx84.Flatseal com.mattjakeman.ExtensionManager ca.desrt.dconf-editor com.usebottles.bottles org.gnome.FontManager org.gnome.GHex it.mijorus.gearlever io.github.flattool.Warehouse com.anydesk.Anydesk"
+	local utilities="com.github.tchx84.Flatseal com.mattjakeman.ExtensionManager ca.desrt.dconf-editor com.usebottles.bottles org.gnome.FontManager org.gnome.GHex it.mijorus.gearlever io.github.flattool.Warehouse com.anydesk.Anydesk"
 
-	DEVELOPMENT="com.github.marhkb.Pods org.gnome.design.IconLibrary org.gnome.Devhelp io.github.MakovWait.Godots"
+	local development="com.github.marhkb.Pods org.gnome.design.IconLibrary org.gnome.Devhelp io.github.MakovWait.Godots"
 
-	OFFICE="org.libreoffice.LibreOffice com.github.jeromerobert.pdfarranger com.github.flxzt.rnote fr.romainvigier.MetadataCleaner md.obsidian.Obsidian org.cvfosammmm.Setzer com.github.tenderowl.frog io.github.diegoivan.pdf_metadata_editor"
+	local office="org.libreoffice.LibreOffice com.github.jeromerobert.pdfarranger com.github.flxzt.rnote fr.romainvigier.MetadataCleaner md.obsidian.Obsidian org.cvfosammmm.Setzer com.github.tenderowl.frog io.github.diegoivan.pdf_metadata_editor"
 
-	MISC="com.gitlab.newsflash com.spotify.Client com.todoist.Todoist de.haeckerfelix.Fragments org.freecadweb.FreeCAD org.nickvision.tubeconverter org.remmina.Remmina org.videolan.VLC com.prusa3d.PrusaSlicer"
+	local misc="com.gitlab.newsflash com.spotify.Client com.todoist.Todoist de.haeckerfelix.Fragments org.freecadweb.FreeCAD org.nickvision.tubeconverter org.remmina.Remmina org.videolan.VLC com.prusa3d.PrusaSlicer"
 
-	GRAPHICS="io.gitlab.adhami3310.Converter io.gitlab.theevilskeleton.Upscaler org.darktable.Darktable org.gimp.GIMP org.gnome.gThumb org.inkscape.Inkscape org.kde.krita com.github.maoschanz.drawing org.blender.Blender"
+	local graphics="io.gitlab.adhami3310.Converter io.gitlab.theevilskeleton.Upscaler org.darktable.Darktable org.gimp.GIMP org.gnome.gThumb org.inkscape.Inkscape org.kde.krita com.github.maoschanz.drawing org.blender.Blender"
 
-	SOCIAL="com.github.IsmaelMartinez.teams_for_linux com.discordapp.Discord com.sindresorhus.Caprine org.ferdium.Ferdium org.mozilla.Thunderbird us.zoom.Zoom"
+	local social="com.github.IsmaelMartinez.teams_for_linux com.discordapp.Discord com.sindresorhus.Caprine org.ferdium.Ferdium org.mozilla.Thunderbird us.zoom.Zoom"
 
-	GAMES="com.github.k4zmu2a.spacecadetpinball io.mrarm.mcpelauncher org.gnome.Aisleriot org.gnome.Chess org.gnome.Mines org.gnome.Mahjongg org.gnome.Quadrapassel"
+	local games="com.github.k4zmu2a.spacecadetpinball io.mrarm.mcpelauncher org.gnome.Aisleriot org.gnome.Chess org.gnome.Mines org.gnome.Mahjongg org.gnome.Quadrapassel"
 
-	GAMEUTILITIES="com.github.Matoking.protontricks com.valvesoftware.Steam net.davidotek.pupgui2 net.lutris.Lutris org.prismlauncher.PrismLauncher net.pcsx2.PCSX2 org.DolphinEmu.dolphin-emu info.cemu.Cemu org.freedesktop.Platform.VulkanLayer.MangoHud com.dosbox_x.DOSBox-X"
+	local game_utilities="com.github.Matoking.protontricks com.valvesoftware.Steam net.davidotek.pupgui2 net.lutris.Lutris org.prismlauncher.PrismLauncher net.pcsx2.PCSX2 org.DolphinEmu.dolphin-emu info.cemu.Cemu org.freedesktop.Platform.VulkanLayer.MangoHud com.dosbox_x.DOSBox-X"
 
-	POP="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark com.github.GradienceTeam.Gradience org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks"
+	local pop="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark com.github.GradienceTeam.Gradience org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks"
 
-	DEBIAN="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike"
+	local debian="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike"
 
-	DISTRO=$POP
+	if [ $DISTRO = "POP" ]
+	then
+			local distro=$pop
+	elif [ $DISTRO = "DEBIAN" ]
+	then
+			local distro=$debian
+	fi
 
-	flatpak install flathub -y $UTILITIES $DEVELOPMENT $OFFICE $MISC $GRAPHICS $SOCIAL $GAMES $GAMEUTILITIES $DISTRO
+	flatpak install flathub -y $utilities $development $office $misc $graphics $social $games $game_utilities $distro
 
 	vlc_pause_click_plugin
 	game_drive_setup	
@@ -232,7 +262,7 @@ function install_beta_flatpaks {
 }
 
 function vlc_pause_click_plugin {
-	ARCH="$(flatpak info --show-metadata org.videolan.VLC \
+	local arch="$(flatpak info --show-metadata org.videolan.VLC \
 			| sed -En '
 			/^\[Application\]/ {
 				:label
@@ -248,7 +278,7 @@ function vlc_pause_click_plugin {
 				q
 		}'
 	)"
-	BRANCH="$(flatpak info --show-metadata org.videolan.VLC \
+	local branch="$(flatpak info --show-metadata org.videolan.VLC \
 			| sed -En '
 			/^\[Extension org.videolan.VLC.Plugin\]/ {
 				:label
@@ -264,7 +294,7 @@ function vlc_pause_click_plugin {
 				q
 		}'
 	)"
-	flatpak install -y "runtime/org.videolan.VLC.Plugin.pause_click/$ARCH/$BRANCH"
+	flatpak install -y "runtime/org.videolan.VLC.Plugin.pause_click/$arch/$branch"
 }
 
 function game_drive_setup {
@@ -464,7 +494,6 @@ function edit_grub {
 function install_snaps {
 	sudo snap install code --classic
 }
-
 
 if [ ! -f ~/step1_complete ]
 then
