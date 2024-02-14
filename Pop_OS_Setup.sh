@@ -2,7 +2,29 @@
 
 USER=$(whoami)
 SCRIPT="Pop_OS_Setup"
-DISTRO="POP"
+
+function select_distro {
+	PS3='Select distribution: '
+	options=("Pop!_OS" "Debian")
+	select opt in "${options[@]}"
+	do
+	    case $opt in
+		"Pop!_OS")
+		    echo "Selecting Pop!_OS"
+			DISTRO="POP"
+			touch ~/pop
+		    break
+		    ;;
+		"Debian")
+		    echo "Selecting Debian"
+			DISTRO="DEBIAN"
+			touch ~/debian
+		    break
+		    ;;
+		*) echo "invalid option $REPLY";;
+	    esac
+	done
+}
 
 function check_new_install {
 	read -p "New install? [y/n] " response
@@ -366,34 +388,49 @@ function customisations {
 	# Customise Desktop 
 	gsettings set org.gnome.desktop.interface clock-show-weekday true
 	gsettings set org.gnome.desktop.interface clock-format '24h'
-	gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
-	gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-	gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
 	gsettings set org.gnome.shell.extensions.ding show-volumes true
-	gsettings set org.gnome.mutter workspaces-only-on-primary true
 	gsettings set org.gnome.desktop.interface show-battery-percentage true
-	gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
-	gsettings set org.gnome.shell.extensions.pop-shell fullscreen-launcher true
 
 	# Customise Nautilus
 	gsettings set org.gnome.nautilus.preferences show-create-link true
 	gsettings set org.gnome.nautilus.preferences show-delete-permanently true
 	gsettings set org.gnome.nautilus.list-view use-tree-view true
 
-	# Customise Gedit
-	gsettings set org.gnome.gedit.preferences.editor display-overview-map true
+	if [ $DISTRO = "POP" ]
+	then
+		gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
+		gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
+		gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
+		gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
+		gsettings set org.gnome.shell.extensions.pop-shell fullscreen-launcher true
+
+		# Customise Gedit
+		gsettings set org.gnome.gedit.preferences.editor display-overview-map true
+	elif [ $DISTRO = "DEBIAN" ]
+	then
+		gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+		gsettings set org.gnome.software packaging-format-preference "['flatpak', 'snap', 'deb']"
+
+		# Customise TextEditor
+		gsettings set org.gnome.TextEditor highlight-current-line true
+		gsettings set org.gnome.TextEditor show-line-numbers true
+		gsettings set org.gnome.TextEditor show-map true
+	fi
 
 	# Customise Privacy
 	gsettings set org.gnome.desktop.privacy remove-old-temp-files true
 	gsettings set org.gnome.desktop.privacy remove-old-trash-files true
 
-	# Set GTK3 theme
-	flatpak override --user --filesystem=xdg-data/themes
+	if [ $DISTRO = "POP" ]
+	then
+		# Set GTK3 theme
+		flatpak override --user --filesystem=xdg-data/themes
 
-	# Set GTK4 theme
-	mkdir -pv ~/.config/gtk-4.0
-	flatpak override --user --filesystem=xdg-config/gtk-4.0
-	flatpak run com.github.GradienceTeam.Gradience
+		# Set GTK4 theme
+		mkdir -pv ~/.config/gtk-4.0
+		flatpak override --user --filesystem=xdg-config/gtk-4.0
+		flatpak run com.github.GradienceTeam.Gradience
+	fi
 }
 
 function install_launcher_plugins {
@@ -495,32 +532,73 @@ function install_snaps {
 	sudo snap install code --classic
 }
 
-if [ ! -f ~/step1_complete ] && [ $DISTRO = "POP" ]
+if [ ! -f ~/step1_complete ]
 then
-	check_new_install
+	select_distro
+
+	if [ $DISTRO = "POP" ]
+	then
+		check_new_install
+	fi
 
 	sudo apt-get update
 	sudo apt-get full-upgrade -y
-
 	remove_packages
+
+	if [ $DISTRO = "DEBIAN" ]
+	then
+		add_repos
+		nvidia_drivers
+		upgrade_kernel
+	fi
+
 	install_packages
-	add_ppa_and_install_packages
- 	install_joycond_package
+
+	if [ $DISTRO = "DEBIAN" ]
+	then
+		tune_performance
+	fi
+
+	if [ $DISTRO = "POP" ]
+	then
+		add_ppa_and_install_packages
+	fi
+
 	enable_timeshift
 	mk_dot_dirs
+
+	if [ $DISTRO = "DEBIAN" ]
+	then
+		tune_performance
+		setup_flatpak
+		setup_snap
+		automatic_updates
+		edit_grub
+	fi
+
 	setup_nix
+	install_joycond_package
  	install_p3xonenote
 	autostart_script
 
 	touch ~/step1_complete
+	if [ $DISTRO = "DEBIAN" ]
+	then
+		touch ~/step2_complete
+	fi
 	systemctl reboot
 fi
 
-if [ -f ~/step1_complete ] && [ ! -f ~/step2_complete ] && [ $DISTRO = "POP" ]
+if [ -f ~/step1_complete ] && [ ! -f ~/step2_complete ]
 then
+	if [ -f ~/pop ]
+	then
+		DISTRO="POP"
+	fi
+
 	install_nix_packages
 
-	if [ ! -f ~/new_install ]
+	if [ ! -f ~/new_install ] && [ $DISTRO = "POP" ]
 	then
 		rm -rfv ~/.config/autostart/$SCRIPT.desktop
 		rm -rfv ~/step1_complete
@@ -531,16 +609,30 @@ then
 	systemctl reboot
 fi
 
-if [ -f ~/step1_complete ] && [ -f ~/step2_complete ] && [ $DISTRO = "POP" ]
+if [ -f ~/step1_complete ] && [ -f ~/step2_complete ]
 then
+	if [ -f ~/pop ]
+	then
+		DISTRO="POP"
+	elif [ -f ~/debian ]
+	then
+		DISTRO="DEBIAN"
+		install_snaps
+		install_nix_packages
+	fi
+
 	install_flatpaks
 	install_beta_flatpaks
 	install_appimages
 	install_matlab
-	install_launcher_plugins
 	customisations
- 	setup_style_switcher
 
+	if [ $DISTRO = "POP" ]
+	then
+		install_launcher_plugins
+ 		setup_style_switcher
+	fi
+	
 	# Enable Eduroam
 	firefox -url 'https://cloud.securew2.com/public/12133/eduroam/'
 
