@@ -17,7 +17,7 @@ function check_new_install {
 	esac
 }
 
-github_latest_release_deb() {
+function github_latest_release_deb() {
     local username=$1
     local repository=$2
 
@@ -495,7 +495,7 @@ function install_snaps {
 	sudo snap install code --classic
 }
 
-if [ ! -f ~/step1_complete ]
+if [ ! -f ~/step1_complete ] && [ $DISTRO = "POP" ]
 then
 	check_new_install
 
@@ -516,7 +516,7 @@ then
 	systemctl reboot
 fi
 
-if [ -f ~/step1_complete ] && [ ! -f ~/step2_complete ]
+if [ -f ~/step1_complete ] && [ ! -f ~/step2_complete ] && [ $DISTRO = "POP" ]
 then
 	install_nix_packages
 
@@ -531,7 +531,7 @@ then
 	systemctl reboot
 fi
 
-if [ -f ~/step1_complete ] && [ -f ~/step2_complete ]
+if [ -f ~/step1_complete ] && [ -f ~/step2_complete ] && [ $DISTRO = "POP" ]
 then
 	install_flatpaks
 	install_beta_flatpaks
