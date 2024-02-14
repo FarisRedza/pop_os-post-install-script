@@ -1,7 +1,7 @@
 #!/bin/bash
 
 USER=$(whoami)
-SCRIPT="Pop_OS_Setup"
+SCRIPT="Linux_Setup"
 
 function select_distro {
 	PS3='Select distribution: '
