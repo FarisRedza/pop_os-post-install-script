@@ -100,15 +100,15 @@ function install_packages {
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
-	local media_utilities="ubuntu-restricted-extras webp-pixbuf-loader playerctl"
+	local media_utilities=""
 
 	local development="code"
 
 	local extras="gnome-user-share gnome-sushi"
 
-	local pop="synaptic"
+	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl"
 
-	local debian=""
+	local debian="libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
 
 	if [ $DISTRO = "POP" ]
 	then
