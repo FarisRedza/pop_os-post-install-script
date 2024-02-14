@@ -100,12 +100,6 @@ function enable_timeshift {
 	sudo timeshift-gtk
 }
 
-function install_quiet-shutdown_package {
-	github_latest_release_deb FarisRedza quiet-shutdown
-	sudo apt-get install ./quiet-shutdown*.deb
-	rm -rfv quiet-shutdown*.deb
-}
-
 function install_joycond_package {
 	github_latest_release_deb FarisRedza joycond
 	sudo apt-get install ./joycond*.deb
@@ -128,6 +122,11 @@ function setup_nix {
 	# Nix desktop icons
 	printf '# Nix package desktop icons\nXDG_DATA_DIRS="/home/faris/.nix-profile/share:$XDG_DATA_DIRS"' > ~/.config/environment.d/nixIcons.conf
 }
+
+function install_p3xonenote {
+	github_latest_release_deb patrikx3 onenote
+ 	sudo apt-get install -y ./p3x-onenote*.deb
+  	rm -rfv ./p3x-onenote*.deb
 
 function autostart_script {
 	printf "[Desktop Entry]
@@ -481,6 +480,7 @@ then
 	enable_timeshift
 	mk_dot_dirs
 	setup_nix
+ 	install_p3xonenote
 	autostart_script
 
 	touch ~/step1_complete
