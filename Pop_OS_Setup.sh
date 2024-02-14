@@ -16,15 +16,42 @@ function check_new_install {
 	esac
 }
 
-github_latest_release() {
+github_latest_release_deb() {
     local username=$1
     local repository=$2
 
     # Get the latest release information from GitHub API using jq
-    local latest_release=$(curl -s "https://api.github.com/repos/$username/$repository/releases/latest" | jq -r '.assets[0].browser_download_url')
+    local latest_release=$(curl -s "https://api.github.com/repos/$username/$repository/releases/latest")
 
-    # Use wget to download the deb file
-    wget $latest_release
+    # Identify the architecture of the system
+    local architecture=$(dpkg --print-architecture)
+    
+    # Loop through assets to find the appropriate deb file
+    local deb_url=""
+    while IFS= read -r line; do
+        local asset_url=$(echo "$line" | jq -r '.browser_download_url')
+        local asset_name=$(echo "$line" | jq -r '.name')
+        if [[ $asset_url == *".deb" ]]; then
+            # Check if the deb file name contains the architecture
+            if [[ $asset_name == *"$architecture"* ]]; then
+                deb_url=$asset_url
+                break
+            fi
+        fi
+    done <<< "$(echo "$latest_release" | jq -c '.assets[]')"
+
+    # If no architecture-specific deb file was found, download the first one
+    if [ -z "$deb_url" ]; then
+        deb_url=$(echo "$latest_release" | jq -r '.assets[] | select(.browser_download_url | endswith(".deb")) | .browser_download_url' | head -n 1)
+    fi
+
+    # Check if a deb file was found
+    if [ -n "$deb_url" ]; then
+        # Use wget to download the deb file
+        wget "$deb_url"
+    else
+        echo "No deb file found in the latest release."
+    fi
 }
 
 
@@ -74,13 +101,13 @@ function enable_timeshift {
 }
 
 function install_quiet-shutdown_package {
-	github_latest_release FarisRedza quiet-shutdown
+	github_latest_release_deb FarisRedza quiet-shutdown
 	sudo apt-get install ./quiet-shutdown*.deb
 	rm -rfv quiet-shutdown*.deb
 }
 
 function install_joycond_package {
-	github_latest_release FarisRedza joycond
+	github_latest_release_deb FarisRedza joycond
 	sudo apt-get install ./joycond*.deb
 	rm -rfv joycond*.deb
 }
