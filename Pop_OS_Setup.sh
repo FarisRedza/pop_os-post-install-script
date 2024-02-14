@@ -48,6 +48,8 @@ function github_latest_release_deb() {
 
     # Identify the architecture of the system
     local architecture=$(dpkg --print-architecture)
+
+	cd ~/
     
     # Loop through assets to find the appropriate deb file
     local deb_url=""
@@ -75,6 +77,8 @@ function github_latest_release_deb() {
     else
         echo "No deb file found in the latest release."
     fi
+
+	cd -
 }
 
 function remove_packages {
