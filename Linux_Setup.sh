@@ -106,11 +106,11 @@ function install_packages {
 
 	local media_utilities=""
 
-	local development="code"
+	local development=""
 
-	local extras="gnome-user-share gnome-sushi"
+	local extras=""
 
-	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl"
+	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
 	local debian="wget libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
 
@@ -474,12 +474,6 @@ function add_repos {
 	# Add backports repo
 	echo 'deb http://deb.debian.org/debian bookworm-backports main
 	# deb-src http://deb.debian.org/debian bookworm-backports main' | sudo tee -a /etc/apt/sources.list.d/bookworm-backports.list > /dev/null
-
-	# Add vscode repo
-	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-	sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-	sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-	rm -f packages.microsoft.gpg
 	
 	sudo apt-get update
 }
@@ -518,6 +512,13 @@ function install_firefox {
 	sudo apt-get update
 	sudo apt-get install -y firefox firefox-l10n-en-gb
 }
+
+function install_vscode {
+	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+	sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+	sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+	rm -f packages.microsoft.gpg
+ }
 
 function setup_flatpak {
 	sudo apt-get install -y gnome-software-plugin-flatpak
