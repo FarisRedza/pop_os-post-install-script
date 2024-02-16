@@ -393,7 +393,6 @@ function customisations {
 	# Customise Desktop 
 	gsettings set org.gnome.desktop.interface clock-show-weekday true
 	gsettings set org.gnome.desktop.interface clock-format '24h'
-	gsettings set org.gnome.shell.extensions.ding show-volumes true
 	gsettings set org.gnome.desktop.interface show-battery-percentage true
 
 	# Customise Nautilus
@@ -403,6 +402,7 @@ function customisations {
 
 	if [ $DISTRO = "POP" ]
 	then
+ 		gsettings set org.gnome.shell.extensions.ding show-volumes true
 		gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
 		gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 		gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
