@@ -154,10 +154,6 @@ function setup_nix {
 	sudo rm -rfv ~/.config/nixpkgs ~/.nix-defexpr ~/.nix-profile
 
 	sh <(curl -L https://nixos.org/nix/install) --daemon
-	
-	# Add unstable channel
-	nix-channel --add https://nixos.org/channels/nixpkgs-unstable unstable
-	nix-channel --update
 
 	# Nix integrations
 	mkdir ~/.config/nixpkgs
@@ -185,6 +181,10 @@ Terminal=true" >> ~/.config/autostart/$SCRIPT.desktop
 }
 
 function install_nix_packages {
+	# Add unstable channel
+	nix-channel --add https://nixos.org/channels/nixpkgs-unstable unstable
+	nix-channel --update
+
 	local android="nixpkgs.android-tools nixpkgs.scrcpy"
 
 	local development="nixpkgs.distrobox nixpkgs.podman"
