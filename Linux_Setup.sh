@@ -583,6 +583,7 @@ then
 	if [ $DISTRO = "DEBIAN" ]
 	then
 		tune_performance
+		install_firefox
 		setup_flatpak
 		setup_snap
 		automatic_updates
