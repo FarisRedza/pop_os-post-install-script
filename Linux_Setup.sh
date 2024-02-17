@@ -483,7 +483,7 @@ function add_repos {
 
 	# Add backports repo
 	echo 'deb http://deb.debian.org/debian bookworm-backports main
-	# deb-src http://deb.debian.org/debian bookworm-backports main' | sudo tee -a /etc/apt/sources.list.d/bookworm-backports.list > /dev/null
+	deb-src http://deb.debian.org/debian bookworm-backports main' | sudo tee -a /etc/apt/sources.list.d/bookworm-backports.list > /dev/null
 	
 	sudo apt-get update
 }
@@ -600,7 +600,6 @@ then
 		install_firefox
   		install_vscode
 		setup_flatpak
-		setup_snap
 		automatic_updates
 		edit_grub
 	fi
@@ -646,7 +645,6 @@ then
 	elif [ -f ~/debian ]
 	then
 		DISTRO="DEBIAN"
-		install_snaps
 		install_nix_packages
 	fi
 
