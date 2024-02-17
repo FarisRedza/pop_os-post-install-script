@@ -437,7 +437,7 @@ function customisations {
 	elif [ $DISTRO = "DEBIAN" ]
 	then
 		gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
-		gsettings set org.gnome.software packaging-format-preference "['flatpak', 'snap', 'deb']"
+		gsettings set org.gnome.software packaging-format-preference "['flatpak', 'deb']"
 
 		# Customise TextEditor
 		gsettings set org.gnome.TextEditor highlight-current-line true
