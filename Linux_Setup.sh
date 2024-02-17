@@ -28,8 +28,8 @@ function select_distro {
 
 function check_distro {
 	if [ -f ~/pop ]
-		then
-			DISTRO="POP"
+	then
+		DISTRO="POP"
 	elif [ -f ~/debian ]
 	then
 		DISTRO="DEBIAN"
@@ -50,44 +50,45 @@ function check_new_install {
 }
 
 function github_latest_release_deb() {
-    local username=$1
-    local repository=$2
+	local username=$1
+	local repository=$2
 
-    # Get the latest release information from GitHub API using jq
-    local latest_release=$(curl -s "https://api.github.com/repos/$username/$repository/releases/latest")
+	# Get the latest release information from GitHub API using jq
+	local latest_release=$(curl -s "https://api.github.com/repos/$username/$repository/releases/latest")
 
-    # Identify the architecture of the system
-    local architecture=$(dpkg --print-architecture)
+	# Identify the architecture of the system
+	local architecture=$(dpkg --print-architecture)
 
 	cd ~/
     
-    # Loop through assets to find the appropriate deb file
-    local deb_url=""
-    while IFS= read -r line; do
-        local asset_url=$(echo "$line" | jq -r '.browser_download_url')
-        local asset_name=$(echo "$line" | jq -r '.name')
-        if [[ $asset_url == *".deb" ]]; then
-            # Check if the deb file name contains the architecture
-            if [[ $asset_name == *"$architecture"* ]]; then
-                deb_url=$asset_url
-                break
-            fi
-        fi
-    done <<< "$(echo "$latest_release" | jq -c '.assets[]')"
+	# Loop through assets to find the appropriate deb file
+	local deb_url=""
+	while IFS= read -r line; do
+		local asset_url=$(echo "$line" | jq -r '.browser_download_url')
+		local asset_name=$(echo "$line" | jq -r '.name')
+		if [[ $asset_url == *".deb" ]]; then
+			# Check if the deb file name contains the architecture
+			if [[ $asset_name == *"$architecture"* ]]; 
+			then
+				deb_url=$asset_url
+			break
+			fi
+		fi
+	done <<< "$(echo "$latest_release" | jq -c '.assets[]')"
 
-    # If no architecture-specific deb file was found, download the first one
-    if [ -z "$deb_url" ]; then
-        deb_url=$(echo "$latest_release" | jq -r '.assets[] | select(.browser_download_url | endswith(".deb")) | .browser_download_url' | head -n 1)
-    fi
+	# If no architecture-specific deb file was found, download the first one
+	if [ -z "$deb_url" ]; then
+		deb_url=$(echo "$latest_release" | jq -r '.assets[] | select(.browser_download_url | endswith(".deb")) | .browser_download_url' | head -n 1)
+	fi
 
-    # Check if a deb file was found
-    if [ -n "$deb_url" ]; then
-        # Use wget to download the deb file
-        wget "$deb_url"
-    else
-        echo "No deb file found in the latest release."
-    fi
-
+	# Check if a deb file was found
+	if [ -n "$deb_url" ];
+	then
+		# Use wget to download the deb file
+		wget "$deb_url"
+	else
+		echo "No deb file found in the latest release."
+	fi
 	cd -
 }
 
@@ -97,9 +98,10 @@ function remove_packages {
 	local exclude_packages="task-desktop task-gnome-desktop task-english task-british-desktop"
 	local packages_to_remove=""
 	for package in $packages; do
-	    if [[ ! "$exclude_packages" =~ "$package" ]]; then
-	        packages_to_remove+=" $package"
-	    fi
+		if [[ ! "$exclude_packages" =~ "$package" ]];
+		then
+	        	packages_to_remove+=" $package"
+		fi
 	done
  
 	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common zutty mlterm-common xiterm+thai $packages_to_remove"
@@ -136,10 +138,10 @@ function install_packages {
 
 	if [ $DISTRO = "POP" ]
 	then
-			local distro=$pop
+		local distro=$pop
 	elif [ $DISTRO = "DEBIAN" ]
 	then
-			local distro=$debian
+		local distro=$debian
 	fi
 
 	sudo apt-get install -y $system_apps $system_utilities $hardware_utilities $media_utilities $development $extras $distro
@@ -227,7 +229,8 @@ function install_nix_packages {
 
 	nix-env -iA $android $development $game_utilities $utilities $distro
 
-	if [ $DISTRO = "DEBIAN" ]; then
+	if [ $DISTRO = "DEBIAN" ];
+	then
 		# Symlink theme
 		sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
 	fi
@@ -290,10 +293,10 @@ function install_flatpaks {
 
 	if [ $DISTRO = "POP" ]
 	then
-			local distro=$pop
+		local distro=$pop
 	elif [ $DISTRO = "DEBIAN" ]
 	then
-			local distro=$debian
+		local distro=$debian
 	fi
 
 	flatpak install flathub -y $utilities $development $office $misc $graphics $social $games $game_utilities $distro
