@@ -673,6 +673,12 @@ then
 	rm -rfv ~/step1_complete
 	rm -rfv ~/step2_complete
 	rm -rfv ~/new_install
-	
+	if [ $DISTRO = "POP" ]
+	then
+		rm -rfv ~/pop
+	elif [ $DISTRO = "DEBIAN" ]
+	then
+		rm -rfv ~/debian
+	fi
 	systemctl reboot
 fi
