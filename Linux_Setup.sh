@@ -108,10 +108,10 @@ function remove_packages {
 	
 	if [ $DISTRO = "POP" ]
 	then
-			local distro=$pop
+		local distro=$pop
 	elif [ $DISTRO = "DEBIAN" ]
 	then
-			local distro=$debian
+		local distro=$debian
 	fi
 
 	sudo apt-get autopurge -y $distro
@@ -219,10 +219,10 @@ function install_nix_packages {
 
 	if [ $DISTRO = "POP" ]
 	then
-			local distro=$pop
+		local distro=$pop
 	elif [ $DISTRO = "DEBIAN" ]
 	then
-			local distro=$debian
+		local distro=$debian
 	fi
 
 	nix-env -iA $android $development $game_utilities $utilities $distro
