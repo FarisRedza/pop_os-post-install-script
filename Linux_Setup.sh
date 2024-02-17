@@ -491,8 +491,8 @@ function add_repos {
 function nvidia_drivers {
 	# Add nvidia repo
 	wget https://developer.download.nvidia.com/compute/cuda/repos/debian12/x86_64/cuda-keyring_1.1-1_all.deb
-	sudo apt-get install -y ./cuda-keyring_1.1-1_all.deb
-	rm -rfv cuda-keyring_1.1-1_all.deb
+	sudo apt-get install -y ./cuda-keyring*.deb
+	rm -rfv cuda-keyring*.deb
 
 	sudo apt-get update
 }
