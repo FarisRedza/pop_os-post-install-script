@@ -26,6 +26,16 @@ function select_distro {
 	done
 }
 
+function check_distro {
+	if [ -f ~/pop ]
+		then
+			DISTRO="POP"
+	elif [ -f ~/debian ]
+	then
+		DISTRO="DEBIAN"
+	fi
+ }
+
 function check_new_install {
 	read -p "New install? [y/n] " response
 	case $response in
@@ -619,10 +629,7 @@ fi
 
 if [ -f ~/step1_complete ] && [ ! -f ~/step2_complete ]
 then
-	if [ -f ~/pop ]
-	then
-		DISTRO="POP"
-	fi
+	check_distro
 
 	install_nix_packages
 
@@ -639,12 +646,10 @@ fi
 
 if [ -f ~/step1_complete ] && [ -f ~/step2_complete ]
 then
-	if [ -f ~/pop ]
+	check_distro
+	
+ 	if [ DISTRO="DEBIAN" ]
 	then
-		DISTRO="POP"
-	elif [ -f ~/debian ]
-	then
-		DISTRO="DEBIAN"
 		install_nix_packages
 	fi
 
