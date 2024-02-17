@@ -82,7 +82,17 @@ function github_latest_release_deb() {
 }
 
 function remove_packages {
-	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common"
+	# Remove task packages
+	local packages=$(dpkg -l | grep '^ii' | awk '{print $2}' | grep '^task-')
+	local exclude_packages="task-desktop task-gnome-desktop task-british-desktop"
+	local packages_to_remove=""
+	for package in $packages; do
+	    if [[ ! "$exclude_packages" =~ "$package" ]]; then
+	        packages_to_remove+=" $package"
+	    fi
+	done
+ 
+	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common packages_to_remove"
 
 	local pop="libreoffice-common"
 	
