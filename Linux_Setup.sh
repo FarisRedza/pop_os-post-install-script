@@ -92,7 +92,7 @@ function remove_packages {
 	    fi
 	done
  
-	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common mlterm-common xiterm-thai $packages_to_remove"
+	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common mlterm-common xiterm+thai $packages_to_remove"
 
 	local pop="libreoffice-common"
 	
