@@ -191,6 +191,12 @@ function install_p3xonenote {
   	rm -rfv ./p3x-onenote*.deb
 }
 
+function install_via {
+	github_latest_release_deb the-via releases
+ 	sudo apt-get install -y ./via*.deb
+  	rm -rfv ./via*.deb
+}
+
 function autostart_script {
 	printf "[Desktop Entry]
 Type=Application
@@ -619,6 +625,7 @@ then
 
 	setup_nix
 	install_joycond_package
+ 	install_via
  	install_p3xonenote
 	autostart_script
 
