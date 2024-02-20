@@ -128,7 +128,7 @@ function install_packages {
 
 	local media_utilities=""
 
-	local development=""
+	local development="debmake"
 
 	local extras=""
 
