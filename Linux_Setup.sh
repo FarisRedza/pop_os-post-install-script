@@ -157,7 +157,7 @@ function add_ppa_and_install_packages {
 	# sudo add-apt-repository ppa:farisredza/ppa
  	repoman # temporary workaround until I know how to setup repo to look the same as adding with repoman
  	sudo apt-get update
-  	sudo apt-get install -y quiet-shutdown pop-launcher-plugin-spell pop-launcher-plugin-uni
+  	sudo apt-get install -y quiet-shutdown pop-launcher-plugin-spell pop-launcher-plugin-uni joycond
 }
 
 function enable_timeshift {
@@ -618,13 +618,13 @@ then
 		tune_performance
 		install_firefox
   		install_vscode
+    		install_joycond_package
 		setup_flatpak
 		automatic_updates
 		edit_grub
 	fi
 
 	setup_nix
-	install_joycond_package
  	install_via
  	install_p3xonenote
 	autostart_script
