@@ -615,7 +615,6 @@ then
 
 	if [ $DISTRO = "DEBIAN" ]
 	then
-		tune_performance
 		install_firefox
   		install_vscode
     		install_joycond_package
