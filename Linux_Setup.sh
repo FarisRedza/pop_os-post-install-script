@@ -245,15 +245,15 @@ function install_nix_packages {
 	podman system migrate
 
 	# Distrobox setup
-	mkdir -pv ~/.config/containers
-	printf '{
-    "default": [
-        {
-            "type": "insecureAcceptAnything"
-        }
-    ]
-}
-' >> ~/.config/containers/policy.json
+# 	mkdir -pv ~/.config/containers
+# 	printf '{
+#     "default": [
+#         {
+#             "type": "insecureAcceptAnything"
+#         }
+#     ]
+# }
+# ' >> ~/.config/containers/policy.json
 
 	mkdir -pv ~/.config/systemd/user
 	ln -s ~/.nix-profile/lib/systemd/user/podman.service ~/.config/systemd/user/podman.service
@@ -593,7 +593,7 @@ then
 
 	if [ $DISTRO = "DEBIAN" ]
 	then
-		add_repos
+		# add_repos
 	fi
 
 	install_packages
