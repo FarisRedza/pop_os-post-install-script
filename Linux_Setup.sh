@@ -134,7 +134,7 @@ function install_packages {
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
-	local debian="curl wget libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
+	local debian="curl wget libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald"
 
 	if [ $DISTRO = "POP" ]
 	then
@@ -417,8 +417,6 @@ function install_matlab {
 }
 
 function customisations {
-	ln -s /usr/share/icons/Pop ~/.local/share/icons/
-
 	# Customise Desktop 
 	gsettings set org.gnome.desktop.interface clock-show-weekday true
 	gsettings set org.gnome.desktop.interface clock-format '24h'
@@ -431,6 +429,7 @@ function customisations {
 
 	if [ $DISTRO = "POP" ]
 	then
+		ln -s /usr/share/icons/Pop ~/.local/share/icons/
  		gsettings set org.gnome.shell.extensions.ding show-volumes true
 		gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
 		gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
@@ -620,7 +619,7 @@ then
     		install_joycond_package
 		setup_flatpak
 		automatic_updates
-		edit_grub
+		# edit_grub
 	fi
 
 	setup_nix
