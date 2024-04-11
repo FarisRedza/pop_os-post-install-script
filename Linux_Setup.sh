@@ -295,7 +295,7 @@ function install_flatpaks {
 
 	local pop="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark com.github.GradienceTeam.Gradience org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks"
 
-	local debian="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike"
+	local debian="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike org.gnome.PowerStats"
 
 	if [ $DISTRO = "POP" ]
 	then
