@@ -134,7 +134,7 @@ function install_packages {
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
-	local debian="curl wget libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald"
+	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald"
 
 	if [ $DISTRO = "POP" ]
 	then
@@ -490,19 +490,22 @@ ln -sfr ~/.config/gtk-4.0/gtk-${style}.css ~/.config/gtk-4.0/gtk.css
 
 # Debian functions
 function add_repos {
-	# Add contrib repo
-	SOURCES="/etc/apt/sources.list"
-	sudo sed -i 's/deb http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware/deb http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware contrib non-free/g' $SOURCES
-	sudo sed -i 's/deb-src http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware/deb-src http:\/\/deb.debian.org\/debian\/ bookworm main non-free-firmware contrib non-free/g' $SOURCES
+	local release="bookworm"
+	local sources="/etc/apt/sources.list"
 
-	# Add non-free repo
-	sudo sed -i 's/deb http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware/deb http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware contrib non-free/g' $SOURCES
-	sudo sed -i 's/deb-src http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware/deb-src http:\/\/security.debian.org\/debian-security bookworm-security main non-free-firmware contrib non-free/g' $SOURCES
+	# Loop through each line in the file
+	while IFS= read -r line; do
+		# Check if the line contains certain strings
+		if [[ $line == *"$release main"* || $line == *"$release-updates main"* || $line == *"$release-security main"* ]]; then
+	        	# If the line contains the search strings, append the desired string to the end
+        		line+=" contrib non-free"
+		fi
+		# Output the modified line
+		echo "$line"
+	done < "$sources" > temp_file  # Redirect the output to a temporary file
 
-	# Add backports repo
-	echo 'deb http://deb.debian.org/debian bookworm-backports main
-	deb-src http://deb.debian.org/debian bookworm-backports main' | sudo tee -a /etc/apt/sources.list.d/bookworm-backports.list > /dev/null
-	
+	# Replace the original file with the modified content
+	sudo mv temp_file "$SOURCES"
 	sudo apt-get update
 }
 
@@ -592,7 +595,7 @@ then
 
 	if [ $DISTRO = "DEBIAN" ]
 	then
-		# add_repos
+		add_repos
 	fi
 
 	install_packages
@@ -616,7 +619,7 @@ then
 	then
 		install_firefox
   		install_vscode
-    		install_joycond_package
+    	install_joycond_package
 		setup_flatpak
 		automatic_updates
 		# edit_grub
