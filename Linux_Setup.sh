@@ -494,6 +494,7 @@ function add_repos {
 	local sources="/etc/apt/sources.list"
 
 	# Loop through each line in the file
+	echo "Enabling contrib and non-free repositories"
 	while IFS= read -r line; do
 		# Check if the line contains certain strings
 		if [[ $line == *"$release main"* || $line == *"$release-updates main"* || $line == *"$release-security main"* ]]; then
@@ -505,7 +506,20 @@ function add_repos {
 	done < "$sources" > temp_file  # Redirect the output to a temporary file
 
 	# Replace the original file with the modified content
-	sudo mv temp_file "$SOURCES"
+	sudo mv temp_file "$sources"
+	
+	local backports_string="# Backports allow you to install newer versions of software made available for this release
+deb http://deb.debian.org/debian bookworm-backports main non-free-firmware
+deb-src http://deb.debian.org/debian bookworm-backports main non-free-firmware"
+
+	echo "Enabling backports repository"
+	file_content=$(<"$sources")
+	if [[ $file_content == *"$backports_string"* ]]; then
+		echo "Backports repository already enabled"
+	else
+		echo "$backports_string" >> "$sources"
+	fi
+
 	sudo apt-get update
 }
 
