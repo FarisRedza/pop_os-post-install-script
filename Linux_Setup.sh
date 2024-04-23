@@ -126,7 +126,7 @@ function install_packages {
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
-	local media_utilities=""
+	local media_utilities="heif-thumbnailer icoextract-thumbnailer"
 
 	local development="debmake"
 
