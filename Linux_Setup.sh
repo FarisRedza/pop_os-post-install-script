@@ -579,15 +579,36 @@ function setup_snap {
 }
 
 function edit_grub {
-	sudo cp /etc/default/grub /etc/default/grub.bak
-	sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-	sudo sed -i '/GRUB_TIMEOUT=0/a GRUB_TIMEOUT_STYLE=hidden' /etc/default/grub
-	sudo sed -i '/GRUB_TIMEOUT_STYLE=hidden/a GRUB_HIDDEN_TIMEOUT=0' /etc/default/grub
-	sudo sed -i '/GRUB_HIDDEN_TIMEOUT=0/a GRUB_HIDDEN_TIMEOUT_QUIET=true' /etc/default/grub
-	sudo sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
-	sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="quiet"/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/g' /etc/default/grub
-
-	sudo update-grub
+    sudo cp /etc/default/grub /etc/default/grub.bak
+    file="/etc/default/grub.bak"
+    
+    # Line to search for
+    search_line="GRUB_TIMEOUT=5"
+    
+    # Line to replace with
+    replace_line="GRUB_TIMEOUT=0"
+    
+    # New lines to add after the replaced line
+    new_lines='GRUB_TIMEOUT_STYLE=hidden\nGRUB_HIDDEN_TIMEOUT=0\nGRUB_HIDDEN_TIMEOUT_QUIET=true'
+    
+    # Check if the file contains the search line
+    if grep -q "$search_line" "$file"; then
+        # Replace the search line with the new line and add new lines after it
+        sudo sed -i "/$search_line/c\\$replace_line\n$new_lines" "$file"
+        echo "Replacement done!"
+    else
+        echo "Search line not found."
+    fi
+    search_line='GRUB_CMDLINE_LINUX_DEFAULT="quiet"'
+    replace_line='GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"'
+    if grep -q "$search_line" "$file"; then
+        # Replace the search line with the new line and add new lines after it
+        sudo sed -i "/$search_line/c\\$replace_line" "$file"
+        echo "Replacement done!"
+    else
+        echo "Search line not found."
+    fi
+    sudo update-grub
 }
 
 function install_snaps {
