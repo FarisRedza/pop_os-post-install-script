@@ -134,7 +134,7 @@ function install_packages {
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
-	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald"
+	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald extrepo"
 
 	if [ $DISTRO = "POP" ]
 	then
