@@ -122,13 +122,13 @@ function remove_packages {
 function install_packages {
 	local system_apps="gparted virt-manager"
 
-	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap python3-venv"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
 	local media_utilities="heif-thumbnailer icoextract-thumbnailer"
 
-	local development="debmake"
+	local development="debmake python3-venv python3-dev python3-tk"
 
 	local extras=""
 
