@@ -130,11 +130,11 @@ function install_packages {
 
 	local development="debmake python3-venv python3-dev python3-tk"
 
-	local extras=""
+	local extras="fonts-ibm-plex"
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
-	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald extrepo"
+	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald extrepo bash-completion"
 
 	if [ $DISTRO = "POP" ]
 	then
