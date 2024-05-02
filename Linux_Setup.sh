@@ -134,7 +134,7 @@ function install_packages {
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
-	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald extrepo bash-completion"
+	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald extrepo bash-completion linux-headers-amd64"
 
 	if [ $DISTRO = "POP" ]
 	then
@@ -533,7 +533,7 @@ function nvidia_drivers {
 }
 
 function upgrade_kernel {
-	sudo apt install -y -t stable-backports linux-image-amd64
+	sudo apt install -y -t stable-backports linux-image-amd64 linux-headers-amd64
 	sudo apt-get full-upgrade -y
 }
 
