@@ -93,18 +93,7 @@ function github_latest_release_deb() {
 }
 
 function remove_packages {
-	# Remove task packages
-	local packages=$(dpkg -l | grep '^ii' | awk '{print $2}' | grep '^task-')
-	local exclude_packages="task-desktop task-gnome-desktop task-english task-british-desktop"
-	local packages_to_remove=""
-	for package in $packages; do
-		if [[ ! "$exclude_packages" =~ "$package" ]];
-		then
-	        	packages_to_remove+=" $package"
-		fi
-	done
- 
-	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common zutty mlterm-common xiterm+thai $packages_to_remove"
+	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common zutty mlterm-common xiterm+thai"
 
 	local pop="libreoffice-common"
 	
@@ -122,7 +111,7 @@ function remove_packages {
 function install_packages {
 	local system_apps="gparted virt-manager"
 
-	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien tldr neofetch htop tmux"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
@@ -132,9 +121,9 @@ function install_packages {
 
 	local extras="fonts-ibm-plex"
 
-	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
+	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code lm-sensors"
 
-	local debian="curl wget command-not-found libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi thermald extrepo bash-completion linux-headers-amd64"
+	local debian="bash-completion command-not-found curl wget thermald linux-headers-amd64 distrobox ibus-typing-booster libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
 
 	if [ $DISTRO = "POP" ]
 	then
@@ -215,15 +204,15 @@ function install_nix_packages {
 
 	local android="nixpkgs.android-tools nixpkgs.scrcpy"
 
-	local development="nixpkgs.distrobox nixpkgs.podman"
+	local development=""
 
 	local game_utilities="nixpkgs.ckan"
 
-	local utilities="nixpkgs.neofetch nixpkgs.tldr nixpkgs.htop nixpkgs.lm_sensors nixpkgs.tmux"
+	local utilities=""
 
-	local pop=""
+	local pop="nixpkgs.distrobox nixpkgs.podman"
 
-	local debian="nixpkgs.git nixpkgs.adw-gtk3"
+	local debian=""
 
 	if [ $DISTRO = "POP" ]
 	then
@@ -235,35 +224,37 @@ function install_nix_packages {
 
 	nix-env -iA $android $development $game_utilities $utilities $distro
 
-	if [ $DISTRO = "DEBIAN" ];
-	then
-		# Symlink theme
-		sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
+	# if [ $DISTRO = "DEBIAN" ];
+	# then
+	# 	# Symlink theme
+	# 	sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
+	# fi
+
+	if [ $DISTRO = "POP" ];
+		# Fix podman permissions
+		podman system migrate
+
+		# Distrobox setup
+	# 	mkdir -pv ~/.config/containers
+	# 	printf '{
+	#     "default": [
+	#         {
+	#             "type": "insecureAcceptAnything"
+	#         }
+	#     ]
+	# }
+	# ' >> ~/.config/containers/policy.json
+
+		mkdir -pv ~/.config/systemd/user
+		ln -s ~/.nix-profile/lib/systemd/user/podman.service ~/.config/systemd/user/podman.service
+		ln -s ~/.nix-profile/lib/systemd/user/podman.socket ~/.config/systemd/user/podman.socket
+		ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.service ~/.config/systemd/user/podman-auto-update.service
+		ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.timer ~/.config/systemd/user/podman-auto-update.timer
+		ln -s ~/.nix-profile/lib/systemd/user/podman-kube\@.service ~/.config/systemd/user/podman-kube\@.service
+		ln -s ~/.nix-profile/lib/systemd/user/podman-restart.service ~/.config/systemd/user/podman-restart.service
+
+		systemctl --user enable --now podman.socket
 	fi
-
-	# Fix podman permissions
-	podman system migrate
-
-	# Distrobox setup
-# 	mkdir -pv ~/.config/containers
-# 	printf '{
-#     "default": [
-#         {
-#             "type": "insecureAcceptAnything"
-#         }
-#     ]
-# }
-# ' >> ~/.config/containers/policy.json
-
-	mkdir -pv ~/.config/systemd/user
-	ln -s ~/.nix-profile/lib/systemd/user/podman.service ~/.config/systemd/user/podman.service
-	ln -s ~/.nix-profile/lib/systemd/user/podman.socket ~/.config/systemd/user/podman.socket
-	ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.service ~/.config/systemd/user/podman-auto-update.service
-	ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.timer ~/.config/systemd/user/podman-auto-update.timer
-	ln -s ~/.nix-profile/lib/systemd/user/podman-kube\@.service ~/.config/systemd/user/podman-kube\@.service
-	ln -s ~/.nix-profile/lib/systemd/user/podman-restart.service ~/.config/systemd/user/podman-restart.service
-
-	systemctl --user enable --now podman.socket
 
 	# Distrobox integration
 	if grep -Fxq "# Distrobox" ~/.profile
@@ -285,11 +276,11 @@ function install_flatpaks {
 
 	local misc="com.gitlab.newsflash com.spotify.Client com.todoist.Todoist de.haeckerfelix.Fragments org.freecadweb.FreeCAD org.nickvision.tubeconverter org.remmina.Remmina org.videolan.VLC com.prusa3d.PrusaSlicer"
 
-	local graphics="io.gitlab.adhami3310.Converter io.gitlab.theevilskeleton.Upscaler com.github.huluti.Curtail org.darktable.Darktable org.gimp.GIMP org.gnome.gThumb org.inkscape.Inkscape org.kde.krita com.github.maoschanz.drawing org.blender.Blender"
+	local graphics="io.gitlab.adhami3310.Converter io.gitlab.theevilskeleton.Upscaler com.github.huluti.Curtail org.darktable.Darktable org.gimp.GIMP org.gnome.gThumb org.inkscape.Inkscape org.kde.krita org.blender.Blender"
 
 	local social="com.github.IsmaelMartinez.teams_for_linux com.discordapp.Discord com.sindresorhus.Caprine org.ferdium.Ferdium org.mozilla.Thunderbird us.zoom.Zoom"
 
-	local games="com.github.k4zmu2a.spacecadetpinball io.mrarm.mcpelauncher org.gnome.Aisleriot org.gnome.Chess org.gnome.Mines org.gnome.Mahjongg org.gnome.Quadrapassel"
+	local games="com.github.k4zmu2a.spacecadetpinball io.mrarm.mcpelauncher org.gnome.Aisleriot org.gnome.Chess org.gnome.Mines org.gnome.Mahjongg org.gnome.Quadrapassel org.gnome.Sudoku org.gnome.TwentyFortyEight"
 
 	local game_utilities="com.github.Matoking.protontricks com.valvesoftware.Steam net.davidotek.pupgui2 net.lutris.Lutris org.prismlauncher.PrismLauncher net.pcsx2.PCSX2 org.DolphinEmu.dolphin-emu info.cemu.Cemu org.freedesktop.Platform.VulkanLayer.MangoHud com.dosbox_x.DOSBox-X"
 
@@ -441,7 +432,7 @@ function customisations {
 		gsettings set org.gnome.gedit.preferences.editor display-overview-map true
 	elif [ $DISTRO = "DEBIAN" ]
 	then
-		gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+		# gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
 		gsettings set org.gnome.software packaging-format-preference "['flatpak', 'deb']"
 
 		# Customise TextEditor
@@ -551,18 +542,23 @@ function tune_performance {
 }
 
 function install_firefox {
-	sudo install -d -m 0755 /etc/apt/keyrings
-	wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
-	echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+	# sudo install -d -m 0755 /etc/apt/keyrings
+	# wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+	# echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+
+	sudo extrepo enable mozilla
+
 	sudo apt-get update
 	sudo apt-get install -y firefox firefox-l10n-en-gb
 }
 
 function install_vscode {
-	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-	sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-	sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-	rm -f packages.microsoft.gpg
+	# wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+	# sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+	# sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+	# rm -f packages.microsoft.gpg
+
+	sudo extrepo enable vscode
 
  	sudo apt-get update
   	sudo apt-get install -y code
@@ -579,8 +575,8 @@ function setup_snap {
 }
 
 function edit_grub {
-    sudo cp /etc/default/grub /etc/default/grub.bak
-    file="/etc/default/grub.bak"
+    # sudo cp /etc/default/grub /etc/default/grub.bak
+    file="/etc/default/grub"
     
     # Line to search for
     search_line="GRUB_TIMEOUT=5"
@@ -657,7 +653,7 @@ then
     	install_joycond_package
 		setup_flatpak
 		automatic_updates
-		# edit_grub
+		edit_grub
 	fi
 
 	setup_nix
