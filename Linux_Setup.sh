@@ -123,7 +123,7 @@ function install_packages {
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code lm-sensors"
 
-	local debian="bash-completion command-not-found curl wget thermald linux-headers-amd64 distrobox ibus-typing-booster libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
+	local debian="bash-completion command-not-found curl wget thermald linux-headers-amd64 distrobox ibus-typing-booster apt-config-icons-hidpi apt-config-icons-large-hidpi libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
 
 	if [ $DISTRO = "POP" ]
 	then
