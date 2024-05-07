@@ -230,7 +230,8 @@ function install_nix_packages {
 	# 	sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
 	# fi
 
-	if [ $DISTRO = "POP" ];
+	if [ $DISTRO = "POP" ]
+	then
 		# Fix podman permissions
 		podman system migrate
 
