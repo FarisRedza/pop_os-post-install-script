@@ -111,7 +111,7 @@ function remove_packages {
 function install_packages {
 	local system_apps="gparted virt-manager"
 
-	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien tldr neofetch htop tmux"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien tldr neofetch htop tmux podman-docker"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
@@ -210,7 +210,7 @@ function install_nix_packages {
 
 	local utilities=""
 
-	local pop="nixpkgs.distrobox nixpkgs.podman"
+	local pop="nixpkgs.distrobox"
 
 	local debian=""
 
@@ -230,32 +230,32 @@ function install_nix_packages {
 	# 	sudo ln -s ~/.nix-profile/share/themes/adw-gtk3* /usr/share/themes
 	# fi
 
-	if [ $DISTRO = "POP" ]
-	then
-		# Fix podman permissions
-		podman system migrate
+	# if [ $DISTRO = "POP" ]
+	# then
+	# 	# Fix podman permissions
+	# 	podman system migrate
 
-		# Distrobox setup
-	# 	mkdir -pv ~/.config/containers
-	# 	printf '{
-	#     "default": [
-	#         {
-	#             "type": "insecureAcceptAnything"
-	#         }
-	#     ]
-	# }
-	# ' >> ~/.config/containers/policy.json
+	# 	# Distrobox setup
+	# # 	mkdir -pv ~/.config/containers
+	# # 	printf '{
+	# #     "default": [
+	# #         {
+	# #             "type": "insecureAcceptAnything"
+	# #         }
+	# #     ]
+	# # }
+	# # ' >> ~/.config/containers/policy.json
 
-		mkdir -pv ~/.config/systemd/user
-		ln -s ~/.nix-profile/lib/systemd/user/podman.service ~/.config/systemd/user/podman.service
-		ln -s ~/.nix-profile/lib/systemd/user/podman.socket ~/.config/systemd/user/podman.socket
-		ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.service ~/.config/systemd/user/podman-auto-update.service
-		ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.timer ~/.config/systemd/user/podman-auto-update.timer
-		ln -s ~/.nix-profile/lib/systemd/user/podman-kube\@.service ~/.config/systemd/user/podman-kube\@.service
-		ln -s ~/.nix-profile/lib/systemd/user/podman-restart.service ~/.config/systemd/user/podman-restart.service
+	# 	mkdir -pv ~/.config/systemd/user
+	# 	ln -s ~/.nix-profile/lib/systemd/user/podman.service ~/.config/systemd/user/podman.service
+	# 	ln -s ~/.nix-profile/lib/systemd/user/podman.socket ~/.config/systemd/user/podman.socket
+	# 	ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.service ~/.config/systemd/user/podman-auto-update.service
+	# 	ln -s ~/.nix-profile/lib/systemd/user/podman-auto-update.timer ~/.config/systemd/user/podman-auto-update.timer
+	# 	ln -s ~/.nix-profile/lib/systemd/user/podman-kube\@.service ~/.config/systemd/user/podman-kube\@.service
+	# 	ln -s ~/.nix-profile/lib/systemd/user/podman-restart.service ~/.config/systemd/user/podman-restart.service
 
-		systemctl --user enable --now podman.socket
-	fi
+	# 	systemctl --user enable --now podman.socket
+	# fi
 
 	# Distrobox integration
 	if grep -Fxq "# Distrobox" ~/.profile
