@@ -111,19 +111,19 @@ function remove_packages {
 function install_packages {
 	local system_apps="gparted virt-manager"
 
-	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien tldr neofetch htop tmux podman-docker"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien podman-docker"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
 	local media_utilities="heif-thumbnailer icoextract-thumbnailer"
 
-	local development="debmake python3-venv python3-dev python3-tk"
+	local development="python3-venv python3-tk"
 
 	local extras="fonts-ibm-plex"
 
-	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code lm-sensors"
+	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
-	local debian="bash-completion command-not-found curl wget thermald linux-headers-amd64 distrobox ibus-typing-booster apt-config-icons-hidpi apt-config-icons-large-hidpi libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
+	local debian="bash-completion command-not-found curl wget thermald linux-headers-amd64 apt-config-icons-hidpi apt-config-icons-large-hidpi libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
 
 	if [ $DISTRO = "POP" ]
 	then
@@ -204,13 +204,13 @@ function install_nix_packages {
 
 	local android="nixpkgs.android-tools nixpkgs.scrcpy"
 
-	local development=""
+	local development="nixpkgs.distrobox"
 
 	local game_utilities="nixpkgs.ckan"
 
-	local utilities=""
+	local utilities="nixpkgs.tldr nixpkgs.neofetch nixpkgs.htop nixpkgs.tmux nixpkgs.lm_sensors"
 
-	local pop="nixpkgs.distrobox"
+	local pop="nixpkgs.rbw"
 
 	local debian=""
 
@@ -275,7 +275,7 @@ function install_flatpaks {
 
 	local office="org.libreoffice.LibreOffice com.github.jeromerobert.pdfarranger com.github.flxzt.rnote fr.romainvigier.MetadataCleaner md.obsidian.Obsidian org.cvfosammmm.Setzer com.github.tenderowl.frog io.github.diegoivan.pdf_metadata_editor"
 
-	local misc="com.gitlab.newsflash com.spotify.Client com.todoist.Todoist de.haeckerfelix.Fragments org.freecadweb.FreeCAD org.nickvision.tubeconverter org.remmina.Remmina org.videolan.VLC com.prusa3d.PrusaSlicer"
+	local misc="com.gitlab.newsflash com.spotify.Client com.todoist.Todoist de.haeckerfelix.Fragments org.freecadweb.FreeCAD org.nickvision.tubeconverter org.remmina.Remmina org.videolan.VLC com.prusa3d.PrusaSlicer com.bitwarden.desktop"
 
 	local graphics="io.gitlab.adhami3310.Converter io.gitlab.theevilskeleton.Upscaler com.github.huluti.Curtail org.darktable.Darktable org.gimp.GIMP org.gnome.gThumb org.inkscape.Inkscape org.kde.krita org.blender.Blender"
 
@@ -287,7 +287,7 @@ function install_flatpaks {
 
 	local pop="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark com.github.GradienceTeam.Gradience org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks"
 
-	local debian="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike org.gnome.PowerStats"
+	local debian="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike org.gnome.PowerStats com.system76.Popsicle"
 
 	if [ $DISTRO = "POP" ]
 	then
