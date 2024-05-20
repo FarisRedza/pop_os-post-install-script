@@ -489,7 +489,7 @@ function add_repos {
 	echo "Enabling contrib and non-free repositories"
 	while IFS= read -r line; do
 		# Check if the line contains certain strings
-		if [[ $line == *"$release main"* || $line == *"$release-updates main"* || $line == *"$release-security main"* ]]; then
+		if [[ $line == *"$release main"* || $line == *"$release-updates main"* || $line == *"$release-security main"* || $line == *"$release-backports main"* ]]; then
 	        	# If the line contains the search strings, append the desired string to the end
         		line+=" contrib non-free"
 		fi
