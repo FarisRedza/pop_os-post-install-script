@@ -109,9 +109,9 @@ function remove_packages {
 }
 
 function install_packages {
-	local system_apps="gparted virt-manager"
+	local system_apps="gparted virt-manager setzer"
 
-	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien podman-docker"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien podman-docker tldr lm-sensors tmux"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
@@ -119,7 +119,7 @@ function install_packages {
 
 	local development="python3-venv python3-tk"
 
-	local extras="fonts-ibm-plex"
+	local extras="fonts-ibm-plex texlive-science texlive-publishers texlive-fonsts-extra"
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
@@ -161,10 +161,21 @@ function install_joycond_package {
 	rm -rfv joycond*.deb
 }
 
-function setup_nix {
-	sudo rm -rfv ~/.config/nixpkgs ~/.nix-defexpr ~/.nix-profile
+# function setup_nix {
+# 	sudo rm -rfv ~/.config/nixpkgs ~/.nix-defexpr ~/.nix-profile
 
-	sh <(curl -L https://nixos.org/nix/install) --daemon
+# 	sh <(curl -L https://nixos.org/nix/install) --daemon
+
+# 	# Nix integrations
+# 	mkdir ~/.config/nixpkgs
+# 	echo '{ allowUnfree = true; }' > ~/.config/nixpkgs/config.nix
+
+# 	# Nix desktop icons
+# 	printf '# Nix package desktop icons\nXDG_DATA_DIRS="/home/faris/.nix-profile/share:$XDG_DATA_DIRS"' > ~/.config/environment.d/nixIcons.conf
+# }
+function setup_nix {
+	sudo apt install nix-setup-systemd
+	sudo usermod -aG nix-users $USER
 
 	# Nix integrations
 	mkdir ~/.config/nixpkgs
@@ -202,13 +213,13 @@ function install_nix_packages {
 	nix-channel --add https://nixos.org/channels/nixpkgs-unstable unstable
 	nix-channel --update
 
-	local android="nixpkgs.android-tools nixpkgs.scrcpy"
+	local android="nixpkgs.android-tools"
 
 	local development="nixpkgs.distrobox"
 
 	local game_utilities="nixpkgs.ckan"
 
-	local utilities="nixpkgs.tldr nixpkgs.neofetch nixpkgs.htop nixpkgs.tmux nixpkgs.lm_sensors"
+	local utilities=" nixpkgs.fastfetch"
 
 	local pop="nixpkgs.rbw"
 
