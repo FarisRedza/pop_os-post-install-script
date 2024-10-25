@@ -111,7 +111,7 @@ function remove_packages {
 function install_packages {
 	local system_apps="gparted virt-manager setzer"
 
-	local system_utilities="apt-file dpkg-repack openssh-server gpart uidmap extrepo alien podman-docker tldr lm-sensors tmux"
+	local system_utilities="apt-file dpkg-repack openssh-server gpart extrepo alien podman-docker tldr lm-sensors tmux"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
@@ -119,7 +119,7 @@ function install_packages {
 
 	local development="python3-venv python3-tk"
 
-	local extras="fonts-ibm-plex texlive-science texlive-publishers texlive-fonsts-extra"
+	local extras="fonts-ibm-plex texlive-science texlive-publishers texlive-fonts-extra"
 
 	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
 
