@@ -5,7 +5,7 @@ SCRIPT="Linux_Setup"
 
 function select_distro {
 	PS3='Select distribution: '
-	options=("Pop!_OS" "Debian")
+	options=("Pop!_OS" "Ubuntu" "Debian")
 	select opt in "${options[@]}"
 	do
 	    case $opt in
@@ -13,6 +13,12 @@ function select_distro {
 		    echo "Selecting Pop!_OS"
 			DISTRO="POP"
 			touch ~/pop
+		    break
+		    ;;
+		"Ubuntu")
+		    echo "Selecting Ubuntu"
+			DISTRO="Ubuntu"
+			touch ~/ubuntu
 		    break
 		    ;;
 		"Debian")
@@ -30,6 +36,9 @@ function check_distro {
 	if [ -f ~/pop ]
 	then
 		DISTRO="POP"
+	elif [ -f ~/ubuntu ]
+	then
+		DISTRO="UBUNTU"
 	elif [ -f ~/debian ]
 	then
 		DISTRO="DEBIAN"
@@ -89,10 +98,15 @@ function remove_packages {
 	local debian="gnome-games libreoffice-common evolution-common shotwell-common transmission-common zutty mlterm-common xiterm+thai"
 
 	local pop="libreoffice-common"
+
+	local ubuntu=""
 	
 	if [ $DISTRO = "POP" ]
 	then
 		local distro=$pop
+	elif [ $DISTRO = "UBUNTU" ]
+	then
+		local distro=$ubuntu
 	elif [ $DISTRO = "DEBIAN" ]
 	then
 		local distro=$debian
@@ -102,9 +116,13 @@ function remove_packages {
 }
 
 function install_packages {
-	local system_apps="gparted virt-manager setzer"
+	install_via
+	setup_nix
+    setup_docker
 
-	local system_utilities="apt-file gpart tldr"
+	local system_apps="gparted virt-manager"
+
+	local system_utilities="apt-file gpart"
 
 	local hardware_utilities="btrfs-progs exfatprogs"
 
@@ -114,44 +132,65 @@ function install_packages {
 
 	local extras="fonts-ibm-plex"
 
-	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code"
+	local pop="synaptic ubuntu-restricted-extras webp-pixbuf-loader playerctl gnome-user-share gnome-sushi code tldr"
 
-	local debian="bash-completion command-not-found thermald distrobox fastfetch network-manger-*-gnome ibus-typing-booster libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi"
+	local ubuntu="synaptic gnome-sushi gnome-user-share nautilus-hide fastfetch distrobox ibus-typing-booster ubuntu-restricted-extras network-manger-*-gnome network-manager-strongswan libfuse2t64 gnome-epub-thumbnailer icoextract-thumbnailer"
+
+	local debian="bash-completion command-not-found thermald distrobox fastfetch network-manger-*-gnome network-manager-strongswan ibus-typing-booster libavcodec-extra ttf-mscorefonts-installer unrar gstreamer1.0-libav gstreamer1.0-plugins-ugly gstreamer1.0-vaapi libfuse2 tldr"
 
 	if [ $DISTRO = "POP" ]
 	then
+		sudo apt-get install -y --no-install-recommends steam-devices
+		install_p3xonenote
 		local distro=$pop
+	elif [ $DISTRO = "UBUNTU" ]
+	then
+        setup_extrepo
+		setup_flatpak
+		install_snaps
+		local distro=$ubuntu
 	elif [ $DISTRO = "DEBIAN" ]
 	then
+		sudo apt-get install -y --no-install-recommends steam-devices
         setup_extrepo
         install_firefox
         install_vscode
+		install_p3xonenote
 		setup_flatpak
 		local distro=$debian
 	fi
-
-    install_p3xonenote
-    install_via
-	setup_nix
-    setup_docker
 
 	sudo apt-get install -y $system_apps $system_utilities $hardware_utilities $media_utilities $development $extras $distro
 
 	# Enable DVD playback
 	sudo apt-get -y install libdvd-pkg
 	sudo dpkg-reconfigure libdvd-pkg
-
-	sudo apt-get install -y --no-install-recommends steam-devices
 }
 
 function setup_extrepo {
     sudo apt-get install -y extrepo
-
+	sudo sed -i 's/# - contrib/- contrib/g' /etc/extrepo/config.yaml
+	sudo sed -i 's/# - non-free/- non-free/g' /etc/extrepo/config.yaml
 }
 
 function setup_flatpak {
-	sudo apt-get install -y gnome-software-plugin-flatpak
+	sudo apt-get install -y --no-install-recommends gnome-software-plugin-flatpak
 	flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+	if [ $DISTRO = "UBUNTU" ]
+	then
+		sudo tee /etc/apparmor.d/bwrap > /dev/null << EOF
+abi <abi/4.0>,
+include <tunables/global>
+
+profile bwrap /usr/bin/bwrap flags=(unconfined) {
+  userns,
+
+  # Site-specific additions and overrides. See local/README for details.
+  include if exists <local/bwrap>
+}
+EOF
+		sudo systemctl reload apparmor
+	fi
 }
 
 function install_p3xonenote {
@@ -185,6 +224,12 @@ function setup_docker {
     newgrp docker
 }
 
+function setup_nautilus_share {
+	sudo apt-get install -y nautilus-share
+	sudo usermod -aG sambashare $USER
+	newgrp sambashare
+}
+
 function install_firefox {
 	sudo extrepo enable mozilla
 
@@ -207,11 +252,16 @@ function install_nix_packages {
 
 	local pop="nixpkgs.rbw nixpkgs.distrobox nixpkgs.fastfetch"
 
+	local ubuntu=""
+
 	local debian=""
 
 	if [ $DISTRO = "POP" ]
 	then
 		local distro=$pop
+	elif [ $DISTRO = "UBUNTU" ]
+	then
+		local distro=$ubuntu
 	elif [ $DISTRO = "DEBIAN" ]
 	then
 		local distro=$debian
@@ -226,6 +276,17 @@ function install_nix_packages {
 	else
 		printf '\n#Distrobox\ncommand_not_found_handle() {\n# do not run if not in a container\n  if [ ! -e /run/.containerenv ] && [ ! -e /.dockerenv ]; then\n    exit 127\n  fi\n  distrobox-host-exec "${@}"\n}\nif [ -n "${ZSH_VERSION-}" ]; then\n  command_not_found_handler() {\n    command_not_found_handle "$@"\n }\nfi' >> ~/.profile
 	fi
+}
+
+function install_snaps {
+	local utilities="tldr"
+
+	local development="code rustup"
+
+	local office="thunderbird"
+
+	local game_launchers="steam"
+	sudo snap install $utilities $development $office $game_launchers
 }
 
 function install_flatpaks {
@@ -251,11 +312,16 @@ function install_flatpaks {
 
 	local pop="org.gtk.Gtk3theme.Pop org.gtk.Gtk3theme.Pop-dark org.goldendict.GoldenDict org.gnome.Maps org.gnome.clocks io.github.flattool.Warehouse "
 
+	local ubuntu=""
+
 	local debian="org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark com.github.hugolabe.Wike org.gnome.PowerStats"
 
 	if [ $DISTRO = "POP" ]
 	then
 		local distro=$pop
+	elif [ $DISTRO = "UBUNTU" ]
+	then
+		local distro=$ubuntu
 	elif [ $DISTRO = "DEBIAN" ]
 	then
 		local distro=$debian
@@ -263,7 +329,10 @@ function install_flatpaks {
 
 	flatpak install flathub -y $utilities $development $office $misc $graphics $social $games $game_launchers $game_utilities $distro
 
-	gaming_setup	
+	if [ ! $DISTRO = "UBUNTU" ]
+	then
+		gaming_setup
+	fi
 }
 
 function gaming_setup {
