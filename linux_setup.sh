@@ -133,7 +133,7 @@ function install_packages {
 
 	local media_utilities=""
 
-	local development="python3-venv"
+	local development="python3-venv docker.io"
 
 	local extras="fonts-ibm-plex"
 
