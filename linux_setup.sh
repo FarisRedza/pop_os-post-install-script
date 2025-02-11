@@ -125,7 +125,7 @@ function install_packages {
 	setup_nix
 	setup_docker
 
-	local system_apps="gparted virt-manager"
+	local system_apps="gparted"
 
 	local system_utilities="apt-file gpart"
 
@@ -298,11 +298,23 @@ function install_snaps {
 
 	local utilities="tldr"
 
-	local office="thunderbird"
+	local development=""
 
+	local office="libreoffice metadata-cleaner obsidian thunderbird p3x-onenote teams-for-linux zotero-snap"
+	
+	local misc="newsflash tube-converter fragments remmina bitwarden zoom-client freecad"
+	
+	local graphics="gimp gthumb-unofficial"
+	
+	local social=""
+	
+	local games="space-cadet-pinball"
+	
 	local game_launchers="steam"
+	
+	local game_utilities=""
 
-	sudo snap install $utilities $development $office $game_launchers
+	sudo snap install $utilities $development $office $misc $graphics $social $games $game_launchers $game_utilities
 	sudo snap install --classic code
 	sudo snap install --classic rustup
 }
@@ -312,7 +324,7 @@ function install_flatpaks {
 
 	local utilities="com.github.tchx84.Flatseal com.mattjakeman.ExtensionManager ca.desrt.dconf-editor com.usebottles.bottles org.gnome.FontManager org.gnome.GHex it.mijorus.gearlever com.anydesk.Anydesk"
 
-	local development="org.gnome.design.IconLibrary io.github.MakovWait.Godots io.github.dvlv.boxbuddyrs"
+	local development="org.gnome.design.IconLibrary io.github.MakovWait.Godots io.github.dvlv.boxbuddyrs org.virt_manager.{virt-manager,virt_manager.Extension.Qemu}"
 
 	local office="org.libreoffice.LibreOffice com.github.jeromerobert.pdfarranger com.github.flxzt.rnote fr.romainvigier.MetadataCleaner md.obsidian.Obsidian org.cvfosammmm.Setzer com.github.tenderowl.frog io.github.diegoivan.pdf_metadata_editor"
 
