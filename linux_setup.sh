@@ -386,16 +386,26 @@ function gaming_setup {
 	flatpak override --user --system-talk-name=org.freedesktop.NetworkManager com.valvesoftware.Steam
 }
 
-function autostart_script {
-	mkdir ~/.config/autostart
-	printf "[Desktop Entry]
-Type=Application
-Exec=/home/$USER/$SCRIPT.sh
-Hidden=false
-NoDisplay=false
-X-GNOME-Autostart-enabled=true
-Name=$SCRIPT
-Terminal=true" >> ~/.config/autostart/$SCRIPT.desktop
+function printer_admin {
+	echo '// Printer administration
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.opensuse.cupspkhelper.mechanism.") == 0 &&
+	subject.active == true && subject.local == true &&
+	(subject.isInGroup("sudo") || subject.isInGroup("lpadmin"))) {
+	    return polkit.Result.YES;
+    }
+});' | sudo tee /etc/polkit-1/rules.d/printer-admin.rules > /dev/null
+	
+	function autostart_script {
+		mkdir ~/.config/autostart
+		printf "[Desktop Entry]
+	Type=Application
+	Exec=/home/$USER/$SCRIPT.sh
+	Hidden=false
+	NoDisplay=false
+	X-GNOME-Autostart-enabled=true
+	Name=$SCRIPT
+	Terminal=true" >> ~/.config/autostart/$SCRIPT.desktop
 }
 
 if [ ! -f ~/system_install ]
@@ -413,6 +423,11 @@ then
 	then
 		install_snaps
 	fi
+
+ 	if [ $DISTRO = "DEBIAN" ]
+  	then
+   		printer_admin
+     	fi
 
 	touch ~/system_install
 	autostart_script
